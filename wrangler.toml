@@ -1,0 +1,6 @@
+name = "img_proxy"
+type = "webpack"
+route = '*'
+compatibility_flags = []
+workers_dev = true
+compatibility_date = "2022-05-16"
