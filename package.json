@@ -7,5 +7,10 @@
   "description": "An Custom URL Shortener build on Cloud Flare Worker Platform",
   "dependencies": {
     "validator": "^13.7.0"
-  }
+  },
+  "scripts": {
+    "test": "npm ci"
+  },
+  "author": "Dhruvacube <dhruvashaw@gmail.com>",
+  "license": "GNU General Public License v3.0"
 }
