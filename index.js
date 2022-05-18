@@ -15,7 +15,7 @@ let options = {
   allow_trailing_dot: true,
   allow_protocol_relative_urls: false,
   disallow_auth: false
-}
+};
 
 addEventListener("fetch", (event) => {
   event.respondWith(
@@ -34,9 +34,9 @@ function return404(msg = "Nothing here :)"){
       <meta name="viewport" content="width=device-width, initial-scale=1.0">
     </head>
     <body>
-      <h1 >
-        Nothing here
-      </h1>
+      <h1 >`+
+      msg+
+      `</h1>
     </body>
     </html>`,
       {
@@ -49,21 +49,30 @@ function return404(msg = "Nothing here :)"){
 async function handleRequest(request) {
   const url = new URL(request.url);
 
-  console.log(request.headers, new Date().toLocaleDateString(), url.pathname.substring(1));
+  console.log(request.headers.get('user-agent'), new Date().toLocaleDateString(), url.pathname.substring(1));
 
   if (url.pathname.startsWith("/proxy")) {
     if (!url.searchParams.get('url')){
-      return return404();
+      return return404('hi');
     }
     var decoded_string = atob(url.searchParams.get('url'));
-    if (!validator.isURL(decoded_string)){
-      return return404('Nota valid URL');
+    if (!validator.isURL(decoded_string, options)){
+      return return404('Not a valid URL');
     }
     
-    return new Response(
-      'hi'
-      );
-  };
+    response = await fetch(decoded_string)
+    if (response.status == 200) {
+      var content_type = response.headers.get('content-type').toLowerCase();
+      console.log(content_type , 'Proxy', new Date().toLocaleDateString());
 
-  return return404()
+      if (content_type.includes('image') || content_type.includes('video') || content_type.includes('audio')){
+        return new Response(
+          response.body,
+          {
+            status: response.status,
+            headers: { 'content-type': content_type },
+          }
+        )};
+    }};
+  return return404();
 }
