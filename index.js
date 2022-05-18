@@ -1,3 +1,22 @@
+var validator = require('validator');
+
+let options = {
+  protocols: [
+      'http',
+      'https',
+  ],
+  require_tld: true,
+  require_protocol: false,
+  require_host: true,
+  require_valid_protocol: true,
+  allow_underscores: true,
+  host_whitelist: false,
+  host_blacklist: false,
+  allow_trailing_dot: true,
+  allow_protocol_relative_urls: false,
+  disallow_auth: false
+}
+
 addEventListener("fetch", (event) => {
   event.respondWith(
     handleRequest(event.request).catch(
@@ -6,21 +25,7 @@ addEventListener("fetch", (event) => {
   );
 });
 
-async function handleRequest(request) {
-  const { pathname } = new URL(request.url);
-  var today = new Date();
-  var dd = String(today.getDate()).padStart(2, '0');
-  var mm = String(today.getMonth() + 1).padStart(2, '0'); //January is 0!
-  var yyyy = today.getFullYear();
-  console.log(request.headers['user-agent'], mm + '/' + dd + '/' + yyyy,pathname.substring(1));
-
-  if (pathname.startsWith("/proxy")) {
-    var decoded_string = atob(path);
-    return new Response(
-      page_308
-      );
-  };
-
+function return404(msg = "Nothing here :)"){
   return new Response(
     `<!doctype html>
     <html>
@@ -30,7 +35,7 @@ async function handleRequest(request) {
     </head>
     <body>
       <h1 >
-        Nothing here :)
+        Nothing here
       </h1>
     </body>
     </html>`,
@@ -39,4 +44,26 @@ async function handleRequest(request) {
         headers: { 'content-type': 'text/html' },
       },
     )
+};
+
+async function handleRequest(request) {
+  const url = new URL(request.url);
+
+  console.log(request.headers, new Date().toLocaleDateString(), url.pathname.substring(1));
+
+  if (url.pathname.startsWith("/proxy")) {
+    if (!url.searchParams.get('url')){
+      return return404();
+    }
+    var decoded_string = atob(url.searchParams.get('url'));
+    if (!validator.isURL(decoded_string)){
+      return return404('Nota valid URL');
+    }
+    
+    return new Response(
+      'hi'
+      );
+  };
+
+  return return404()
 }

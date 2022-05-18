@@ -4,5 +4,8 @@
   },
   "main": "index.js",
   "version": "1.0.0",
-  "description": "An Custom URL Shortener build on Cloud Flare Worker Platform"
+  "description": "An Custom URL Shortener build on Cloud Flare Worker Platform",
+  "dependencies": {
+    "validator": "^13.7.0"
+  }
 }
