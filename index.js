@@ -53,7 +53,7 @@ async function handleRequest(request) {
 
   if (url.pathname.startsWith("/proxy")) {
     if (!url.searchParams.get('url')){
-      return return404('hi');
+      return return404();
     }
     var decoded_string = atob(url.searchParams.get('url'));
     if (!validator.isURL(decoded_string, options)){
