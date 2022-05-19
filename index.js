@@ -41,7 +41,10 @@ function return404(msg = "Nothing here :)"){
     </html>`,
       {
         status: 404,
-        headers: { 'content-type': 'text/html' },
+        headers: { 
+          'content-type': 'text/html',
+          'Cache-Control': 'max-age=1500'
+        },
       },
     )
 };
@@ -60,19 +63,26 @@ async function handleRequest(request) {
       return return404('Not a valid URL');
     }
     
-    response = await fetch(decoded_string)
-    if (response.status == 200) {
+    response = await fetch(decoded_string, {
+      cf: {
+        cacheTtl: 5,
+        cacheEverything: true,
+        webp: true,
+        avif: true,
+        scrapeShield: true,
+        polish: 'lossy',
+        minify: {'images': true,'video': true,'css': true,'html': true,'javascript': true, 'audio': true},
+
+      },
+    })
+    if (response.ok || response.redirected) {
       var content_type = response.headers.get('content-type').toLowerCase();
       console.log(content_type , 'Proxy', new Date().toLocaleDateString());
 
       if (content_type.includes('image') || content_type.includes('video') || content_type.includes('audio')){
-        return new Response(
-          response.body,
-          {
-            status: response.status,
-            headers: { 'content-type': content_type },
-          }
-        )};
-    }};
+        response = new Response(response.body, response);
+        response.headers.set('Cache-Control', 'max-age=1500');
+        return response;
+    }}};
   return return404();
 }
